@@ -24,6 +24,12 @@
             padding: 10px;
             margin-top: 5px;
         }
+        #knowledgeList {
+            margin-top: 10px;
+            padding: 10px;
+            background: white;
+            border: 1px solid #ccc;
+        }
     </style>
 </head>
 <body>
@@ -34,13 +40,24 @@
     <h2>育成オプション</h2>
     <input type="text" id="trainInput" placeholder="AIに知識や性格を教える">
     <button onclick="trainAI()">育成</button>
+    <h2>AIの学習内容</h2>
+    <div id="knowledgeList"></div>
+    <button onclick="finalizeAI()">育成完了</button>
 
     <script>
-        let aiData = {
+        let aiData = JSON.parse(localStorage.getItem("aiData")) || {
             name: "プレーンAI",
             personality: "普通",
             knowledge: []
         };
+
+        function updateKnowledgeList() {
+            let knowledgeList = document.getElementById("knowledgeList");
+            knowledgeList.innerHTML = "";
+            aiData.knowledge.forEach((item, index) => {
+                knowledgeList.innerHTML += `<p>${index + 1}. ${item}</p>`;
+            });
+        }
 
         function sendMessage() {
             let input = document.getElementById("userInput").value;
@@ -66,9 +83,19 @@
             let trainInput = document.getElementById("trainInput").value;
             if (trainInput.trim() === "") return;
             aiData.knowledge.push(trainInput);
+            localStorage.setItem("aiData", JSON.stringify(aiData));
             document.getElementById("trainInput").value = "";
             alert("AIが学習しました！");
+            updateKnowledgeList();
         }
+
+        function finalizeAI() {
+            alert("育成が完了しました！");
+            console.log("AIデータを保存・公開する処理をここに追加");
+        }
+
+        updateKnowledgeList();
     </script>
 </body>
 </html>
+
