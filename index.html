@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI育成ゲーム</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        #chatbox {
+            border: 1px solid #ccc;
+            background: white;
+            padding: 10px;
+            height: 300px;
+            overflow-y: auto;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>AI育成ゲーム</h1>
+    <div id="chatbox"></div>
+    <input type="text" id="userInput" placeholder="AIに話しかける...">
+    <button onclick="sendMessage()">送信</button>
+    <h2>育成オプション</h2>
+    <input type="text" id="trainInput" placeholder="AIに知識や性格を教える">
+    <button onclick="trainAI()">育成</button>
+
+    <script>
+        let aiData = {
+            name: "プレーンAI",
+            personality: "普通",
+            knowledge: []
+        };
+
+        function sendMessage() {
+            let input = document.getElementById("userInput").value;
+            if (input.trim() === "") return;
+            
+            let chatbox = document.getElementById("chatbox");
+            chatbox.innerHTML += `<p><strong>あなた:</strong> ${input}</p>`;
+            
+            let aiResponse = generateResponse(input);
+            chatbox.innerHTML += `<p><strong>${aiData.name}:</strong> ${aiResponse}</p>`;
+            chatbox.scrollTop = chatbox.scrollHeight;
+            document.getElementById("userInput").value = "";
+        }
+
+        function generateResponse(input) {
+            if (aiData.knowledge.length > 0) {
+                return aiData.knowledge[Math.floor(Math.random() * aiData.knowledge.length)];
+            }
+            return "まだ何も知らない... 教えてくれる？";
+        }
+
+        function trainAI() {
+            let trainInput = document.getElementById("trainInput").value;
+            if (trainInput.trim() === "") return;
+            aiData.knowledge.push(trainInput);
+            document.getElementById("trainInput").value = "";
+            alert("AIが学習しました！");
+        }
+    </script>
+</body>
+</html>
