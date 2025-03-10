@@ -51,6 +51,8 @@
             knowledge: []
         };
 
+        const apiKey = "YOUR_OPENAI_API_KEY";  // ★APIキーを設定（実運用では環境変数で管理）
+        
         function updateKnowledgeList() {
             let knowledgeList = document.getElementById("knowledgeList");
             knowledgeList.innerHTML = "";
@@ -59,24 +61,42 @@
             });
         }
 
-        function sendMessage() {
+        async function sendMessage() {
             let input = document.getElementById("userInput").value;
             if (input.trim() === "") return;
             
             let chatbox = document.getElementById("chatbox");
             chatbox.innerHTML += `<p><strong>あなた:</strong> ${input}</p>`;
             
-            let aiResponse = generateResponse(input);
+            let aiResponse = await generateResponse(input);
             chatbox.innerHTML += `<p><strong>${aiData.name}:</strong> ${aiResponse}</p>`;
             chatbox.scrollTop = chatbox.scrollHeight;
             document.getElementById("userInput").value = "";
         }
 
-        function generateResponse(input) {
+        async function generateResponse(input) {
+            let prompt = `あなたは${aiData.name}というAIです。性格は「${aiData.personality}」。以下の情報をもとに会話してください。\n\n`;
             if (aiData.knowledge.length > 0) {
-                return aiData.knowledge[Math.floor(Math.random() * aiData.knowledge.length)];
+                prompt += `知識データ:\n${aiData.knowledge.join("\n")}\n\n`;
             }
-            return "まだ何も知らない... 教えてくれる？";
+            prompt += `ユーザー: ${input}\nAI:`;
+            
+            const response = await fetch("https://api.openai.com/v1/completions", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({
+                    model: "gpt-3.5-turbo",
+                    prompt: prompt,
+                    max_tokens: 100,
+                    temperature: 0.7
+                })
+            });
+
+            const data = await response.json();
+            return data.choices[0].text.trim();
         }
 
         function trainAI() {
@@ -98,4 +118,3 @@
     </script>
 </body>
 </html>
-
